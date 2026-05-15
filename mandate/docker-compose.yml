@@ -1,0 +1,40 @@
+services:
+  # CloudOps MCP — TechCorp's own cloud provisioning API (org A)
+  cloudops-mcp:
+    build: ./mcp-server
+    ports:
+      - "8090:8090"
+    environment:
+      - EVENTS_URL=http://event-relay:8099/event
+    depends_on:
+      - event-relay
+    restart: unless-stopped
+
+  # HardwareVendor MCP — separate org, cross-org Ratify verification (org B)
+  vendor-mcp:
+    build: ./vendor-mcp-server
+    ports:
+      - "8091:8091"
+    environment:
+      - EVENTS_URL=http://event-relay:8099/event
+    depends_on:
+      - event-relay
+    restart: unless-stopped
+
+  # Event relay — SSE broadcast for dashboard live updates
+  event-relay:
+    build: ./events
+    ports:
+      - "8099:8099"
+    restart: unless-stopped
+
+  # Dashboard — static HTML served via Python
+  dashboard:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./dashboard:/app
+    command: python -m http.server 8000
+    ports:
+      - "8010:8000"
+    restart: unless-stopped

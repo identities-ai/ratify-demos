@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratify Verify — Live Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
+
+:root {
+  --sky:      #38bdf8;
+  --sky-10:   rgba(56,189,248,0.10);
+  --sky-20:   rgba(56,189,248,0.20);
+  --sky-30:   rgba(56,189,248,0.30);
+  --green:    #10b981;
+  --green-bg: #ecfdf5;
+  --green-bd: #a7f3d0;
+  --red:      #ef4444;
+  --red-bg:   #fef2f2;
+  --red-bd:   #fecaca;
+  --amber:    #f59e0b;
+  --amber-bg: #fffbeb;
+  --amber-bd: #fde68a;
+  --indigo:   #6366f1;
+  --indigo-bg:#eef2ff;
+  --indigo-bd:#c7d2fe;
+  --border:   rgba(0,0,0,0.08);
+}
+
+body {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* ─── STICKY GLASS HEADER ─── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 64px;
+  background: rgba(241,245,249,0.75);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+/* Thin sky-blue shimmer line at bottom of header */
+header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--sky-30) 30%, var(--sky-30) 70%, transparent 100%);
+}
+
+.logo { display: flex; align-items: center; gap: 12px; }
+
+.logo-mark {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--sky);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; font-weight: 900; color: white;
+  letter-spacing: -1px;
+  box-shadow: 0 2px 8px rgba(56,189,248,0.4);
+}
+
+.logo-name {
+  font-size: 19px; font-weight: 800;
+  color: #0f172a; letter-spacing: -0.5px;
+}
+
+.logo-divider { width: 1px; height: 18px; background: #e2e8f0; margin: 0 4px; }
+.logo-sub { font-size: 13px; color: #94a3b8; font-weight: 500; }
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.live-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px; font-weight: 600;
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: all 0.3s;
+}
+.live-pill.live { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; transition: all 0.3s; }
+.live-pill.live .live-dot { background: var(--green); animation: livepulse 2s ease infinite; }
+@keyframes livepulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.3)} 50%{box-shadow:0 0 0 5px rgba(16,185,129,0)} }
+
+/* ─── PAGE LAYOUT ─── */
+.page {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100vh - 64px - 60px);
+}
+
+/* ─── LEFT SIDEBAR (sticky) ─── */
+aside {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: white;
+  border-right: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 1px 0 0 rgba(0,0,0,0.04);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+aside::-webkit-scrollbar { width: 4px; }
+aside::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+.s-label {
+  font-size: 10px; font-weight: 800;
+  color: #94a3b8; text-transform: uppercase;
+  letter-spacing: 1.2px; margin-bottom: 10px;
+}
+
+/* Incident card */
+.incident-card {
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.inc-badge {
+  font-size: 11px; font-weight: 700; color: var(--amber);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 5px; margin-bottom: 7px;
+}
+.incident-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+.incident-card p  { font-size: 13px; color: #78716c; line-height: 1.55; }
+
+/* Explain */
+.explain { display: flex; flex-direction: column; gap: 12px; }
+.explain-row { display: flex; gap: 10px; align-items: flex-start; }
+.explain-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: var(--sky-10); border: 1px solid var(--sky-20);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.explain-row h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.explain-row p  { font-size: 12px; color: #64748b; line-height: 1.5; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat {
+  background: #f8fafc; border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px; padding: 14px 10px; text-align: center;
+  transition: transform 0.2s;
+}
+.stat-n { font-size: 38px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+.stat-l { font-size: 11px; font-weight: 600; color: #94a3b8; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat.s-ok  .stat-n { color: var(--green); }
+.stat.s-no  .stat-n { color: var(--red); }
+.stat.s-x   .stat-n { color: var(--indigo); }
+.stat.s-all .stat-n { color: var(--sky); }
+
+/* Chain */
+.chain { display: flex; flex-direction: column; }
+.cn { display: flex; gap: 12px; }
+.csp { display: flex; flex-direction: column; align-items: center; }
+.cdot {
+  width: 13px; height: 13px; border-radius: 50%;
+  border: 2px solid #e2e8f0; background: #f8fafc;
+  flex-shrink: 0; transition: all 0.4s ease;
+}
+.cdot.on   { border-color: var(--sky); background: var(--sky-10); box-shadow: 0 0 0 3px var(--sky-10); }
+.cdot.done { border-color: var(--green); background: var(--green-bg); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+.cline { width: 2px; flex: 1; min-height: 18px; background: #e2e8f0; }
+.cb { padding-bottom: 18px; }
+.cw { font-size: 14px; font-weight: 700; }
+.cs { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+.cr { font-size: 12px; font-weight: 600; margin-top: 5px; }
+
+/* Protocol box */
+.proto {
+  background: #f8fafc; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px;
+  overflow: hidden;
+}
+.proto-head {
+  padding: 10px 14px; background: white; border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-size: 13px; font-weight: 700; color: #374151;
+  display: flex; align-items: center; gap: 6px;
+}
+.proto-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 14px; border-bottom: 1px solid rgba(0,0,0,0.04);
+  font-size: 13px;
+}
+.proto-row:last-child { border-bottom: none; }
+.pk { color: #64748b; }
+.pv { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #374151; }
+.pc { color: var(--green); font-weight: 800; font-size: 15px; }
+.pzero { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; }
+
+/* ─── MAIN FEED ─── */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px - 60px);
+}
+
+/* Scenario banner — scrolls with content */
+.scenario {
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding: 20px 32px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.scenario-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--sky-10); border: 1px solid var(--sky-20);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.scenario h2 { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+.scenario p  { font-size: 13px; color: #64748b; line-height: 1.6; }
+.scenario p strong { color: #0f172a; font-weight: 600; }
+
+.feed-head {
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #f8fafc;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  position: sticky;
+  top: 64px;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(248,250,252,0.9);
+}
+.feed-head-title { font-size: 14px; font-weight: 700; color: #374151; display: flex; align-items: center; gap: 8px; }
+.ev-pill {
+  background: white; border: 1px solid #e2e8f0;
+  border-radius: 999px; padding: 2px 10px;
+  font-size: 12px; color: #64748b;
+}
+.feed-hint { font-size: 12px; color: #94a3b8; }
+
+/* Feed */
+.feed {
+  padding: 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+/* Empty */
+#empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 400px; gap: 14px; text-align: center; color: #94a3b8;
+}
+.e-ring {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--sky-10); border: 2px solid var(--sky-20);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; animation: breathe 3s ease infinite;
+}
+@keyframes breathe { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.07);opacity:.8} }
+#empty h3 { font-size: 18px; font-weight: 700; color: #334155; }
+#empty p  { font-size: 14px; max-width: 340px; line-height: 1.6; }
+#empty code {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--sky); background: var(--sky-10);
+  padding: 2px 8px; border-radius: 5px; font-size: 13px;
+}
+
+/* ─── EVENT CARD ─── */
+.ecard {
+  background: white;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  animation: popin 0.35s cubic-bezier(0.16,1,0.3,1) both;
+}
+.ecard:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  border-color: rgba(0,0,0,0.12);
+}
+.ecard.ok  { border-left: 4px solid var(--green); }
+.ecard.no  { border-left: 4px solid var(--red); }
+.ecard.sky { border-left: 4px solid var(--sky); }
+
+@keyframes popin { from{opacity:0;transform:translateY(10px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+.ecard-inner { padding: 18px 22px; display: flex; gap: 16px; }
+
+.ecard-ico {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.ecard.ok  .ecard-ico { background: var(--green-bg); }
+.ecard.no  .ecard-ico { background: var(--red-bg); }
+.ecard.sky .ecard-ico { background: var(--sky-10); }
+
+.ecard-text { flex: 1; }
+.ecard-hl   { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 5px; line-height: 1.3; }
+.ecard-sub  { font-size: 13px; color: #64748b; line-height: 1.6; }
+.ecard-sub strong { color: #374151; font-weight: 600; }
+
+.ecard-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; align-items: center; }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+}
+.t-ok  { background: var(--green-bg); color: #15803d; }
+.t-no  { background: var(--red-bg);   color: #b91c1c; }
+.t-sky { background: var(--sky-10);   color: #0369a1; }
+.t-ind { background: var(--indigo-bg);color: #5b21b6; }
+.t-gry { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+.t-grn { background: var(--green-bg); color: #15803d; font-family:'JetBrains Mono',monospace; }
+.t-time { font-family:'JetBrains Mono',monospace; font-size:11px; color:#94a3b8; margin-left: auto; }
+
+/* Cross-org callout */
+.xorg-box {
+  margin: 0 22px 16px;
+  padding: 14px 16px;
+  background: var(--indigo-bg);
+  border: 1px solid var(--indigo-bd);
+  border-radius: 10px;
+}
+.xorg-box h4 { font-size: 14px; font-weight: 800; color: var(--indigo); margin-bottom: 5px; }
+.xorg-box p  { font-size: 13px; color: #4b5563; line-height: 1.6; }
+.xorg-box strong { color: #1f2937; }
+
+/* Expand detail */
+.ecard-detail {
+  display: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  background: #f8fafc;
+  padding: 14px 22px;
+  gap: 18px; flex-wrap: wrap;
+}
+.ecard-detail.open { display: flex; }
+.dg { display: flex; flex-direction: column; gap: 3px; min-width: 180px; }
+.dk { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
+.dv { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #374151; word-break: break-all; line-height: 1.5; }
+
+/* ─── DENIAL FLASH OVERLAY ─── */
+#denial-flash {
+  position: fixed; inset: 0;
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  background: rgba(239,68,68,0.12);
+  backdrop-filter: blur(3px);
+  animation: flashIn 0.2s ease;
+}
+#denial-flash.show { display: flex; }
+@keyframes flashIn { from{opacity:0} to{opacity:1} }
+
+.denial-card {
+  background: white;
+  border: 2px solid #ef4444;
+  border-radius: 20px;
+  padding: 40px 56px;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(239,68,68,0.25);
+  animation: cardPop 0.3s cubic-bezier(0.16,1,0.3,1);
+  max-width: 540px;
+}
+@keyframes cardPop { from{transform:scale(0.92);opacity:0} to{transform:scale(1);opacity:1} }
+
+.denial-icon { font-size: 48px; margin-bottom: 16px; }
+.denial-title {
+  font-size: 22px; font-weight: 900; color: #ef4444;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+.denial-row {
+  display: flex; justify-content: space-between; gap: 20px;
+  background: #f8fafc; border-radius: 10px; padding: 14px 18px;
+  margin-bottom: 10px; text-align: left;
+}
+.denial-row-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.denial-row-val   { font-size: 14px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.denial-row-val.bad { color: #ef4444; }
+.denial-row-val.good { color: #16a34a; }
+.denial-verdict {
+  margin-top: 18px;
+  font-size: 13px; color: #64748b; line-height: 1.6;
+}
+.denial-verdict strong { color: #0f172a; }
+
+/* ─── FOOTER ─── */
+footer {
+  background: white;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.foot-l { font-size: 13px; color: #94a3b8; }
+.foot-l strong { color: var(--sky); font-weight: 700; }
+.foot-r { display: flex; align-items: center; gap: 16px; }
+.foot-stat { font-size: 13px; color: #94a3b8; }
+.foot-stat strong { color: #374151; font-weight: 600; }
+.foot-cta {
+  background: var(--sky); color: white;
+  padding: 8px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(56,189,248,0.35);
+  transition: all 0.2s;
+}
+.foot-cta:hover { background: #0284c7; box-shadow: 0 4px 14px rgba(56,189,248,0.4); transform: translateY(-1px); }
+</style>
+</head>
+<body>
+
+<!-- ── STICKY GLASS HEADER ── -->
+<!-- DENIAL FLASH OVERLAY -->
+<div id="denial-flash" onclick="this.classList.remove('show')">
+  <div class="denial-card">
+    <div class="denial-icon">🛑</div>
+    <div class="denial-title">Mandate Constraint Violated</div>
+    <div class="denial-row">
+      <div>
+        <div class="denial-row-label">Requested</div>
+        <div class="denial-row-val bad" id="df-requested">—</div>
+      </div>
+      <div style="width:1px;background:#e2e8f0"></div>
+      <div>
+        <div class="denial-row-label">Allowed by Mandate</div>
+        <div class="denial-row-val good" id="df-allowed">—</div>
+      </div>
+    </div>
+    <div class="denial-verdict">
+      <strong>The action was denied before execution.</strong><br>
+      The verifier enforced this — not the model.<br>
+      The agent is escalating to the on-call SRE.
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">R</div>
+    <span class="logo-name">Ratify Verify</span>
+    <div class="logo-divider"></div>
+    <span class="logo-sub">Autonomous Agent Authorization</span>
+  </div>
+  <div class="header-right">
+    <span id="clock" style="font-size:13px;color:#94a3b8;font-family:'JetBrains Mono',monospace">—</span>
+    <div class="live-pill offline" id="pill">
+      <div class="live-dot"></div>
+      <span id="pill-txt">Connecting…</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- LEFT SIDEBAR -->
+  <aside>
+
+    <div>
+      <div class="s-label">Active Incident</div>
+      <div class="incident-card">
+        <div class="inc-badge">🚨 In Progress</div>
+        <h3>Database cascade failure</h3>
+        <p>Nodes db-prod-7 and db-prod-8 degraded. The SRE is offline. An AI agent is responding autonomously.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="s-label">What You're Watching</div>
+      <div class="explain">
+        <div class="explain-row">
+          <div class="explain-icon">✍️</div>
+          <div>
+            <h4>SRE pre-authorized the agent</h4>
+            <p>Before going offline, the SRE signed a cryptographic mandate — a permission slip with hard limits.</p>
+          </div>
+        </div>
+        <div class="explain-row">
+          <div class="explain-icon">🤖</div>
+          <div>
+            <h4>Agent acts within those limits</h4>
+            <p>Every action is checked against the mandate. Exceed the limits — blocked automatically.</p>
+          </div>
+        </div>
+        <div class="explain-row">
+          <div class="explain-icon">🔐</div>
+          <div>
+            <h4>Anyone can verify — offline</h4>
+            <p>Even a vendor who's never heard of this company can verify in &lt;1ms, with zero network calls.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="s-label">Results</div>
+      <div class="stats">
+        <div class="stat s-ok" ><div class="stat-n" id="n-ok">0</div> <div class="stat-l">Approved</div></div>
+        <div class="stat s-no" ><div class="stat-n" id="n-no">0</div> <div class="stat-l">Denied</div></div>
+        <div class="stat s-x"  ><div class="stat-n" id="n-x">0</div>  <div class="stat-l">Cross-Org</div></div>
+        <div class="stat s-all"><div class="stat-n" id="n-all">0</div><div class="stat-l">Total</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="s-label">Chain of Delegation</div>
+      <div class="chain">
+        <div class="cn">
+          <div class="csp"><div class="cdot on"></div><div class="cline"></div></div>
+          <div class="cb">
+            <div class="cw">SRE · Human</div>
+            <div class="cs">Signed the mandate · now offline</div>
+          </div>
+        </div>
+        <div class="cn">
+          <div class="csp"><div class="cdot on"></div><div class="cline"></div></div>
+          <div class="cb">
+            <div class="cw">Incident Commander AI</div>
+            <div class="cs">Received mandate · sub-delegated at runtime</div>
+          </div>
+        </div>
+        <div class="cn">
+          <div class="csp"><div class="cdot" id="dot-infra"></div><div class="cline" style="min-height:14px"></div></div>
+          <div class="cb" style="padding-bottom:12px">
+            <div class="cw">Infrastructure Specialist AI</div>
+            <div class="cs">Cloud provisioning · depth-2 chain</div>
+            <div class="cr" id="r-infra" style="color:#94a3b8">⬦ Awaiting…</div>
+          </div>
+        </div>
+        <div class="cn">
+          <div class="csp"><div class="cdot" id="dot-proc"></div></div>
+          <div class="cb" style="padding-bottom:0">
+            <div class="cw">Procurement Specialist AI</div>
+            <div class="cs">Hardware &amp; physical · depth-2 chain</div>
+            <div class="cr" id="r-proc" style="color:#94a3b8">⬦ Awaiting…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="s-label">Protocol</div>
+      <div class="proto">
+        <div class="proto-head">🔐 Ratify Protocol v1</div>
+        <div class="proto-row"><span class="pk">Algorithm</span><span class="pv">Ed25519 + ML-DSA-65</span></div>
+        <div class="proto-row"><span class="pk">Quantum-safe</span><span class="pc">✓</span></div>
+        <div class="proto-row"><span class="pk">Offline verify</span><span class="pc">✓</span></div>
+        <div class="proto-row"><span class="pk">Network calls</span><span class="pzero">Zero</span></div>
+        <div class="proto-row"><span class="pk">Latency</span><span class="pzero">&lt;1ms</span></div>
+        <div class="proto-row"><span class="pk">Max chain</span><span class="pv">3 hops</span></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <div class="scenario">
+      <div class="scenario-icon">🤖</div>
+      <div>
+        <h2>Autonomous Incident Response — In Progress</h2>
+        <p>An AI agent is provisioning infrastructure and ordering hardware <strong>without human approval</strong>. Every action is cryptographically authorized by a mandate the SRE signed before going offline. Watch events appear below as each action executes.</p>
+      </div>
+    </div>
+
+    <div class="feed-head">
+      <div class="feed-head-title">
+        Live Authorization Events
+        <span class="ev-pill" id="ev-count">0 events</span>
+      </div>
+      <span class="feed-hint">Click any event for the cryptographic proof</span>
+    </div>
+
+    <div class="feed" id="feed">
+      <div id="empty">
+        <div class="e-ring">⬡</div>
+        <h3>Ready to go</h3>
+        <p>Run <code>python main.py</code> to trigger the incident and watch the agent respond in real time.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-l">Powered by <strong>Ratify Verify</strong> · Cryptographic authorization for autonomous agents</div>
+  <div class="foot-r">
+    <span class="foot-stat">Uptime: <strong id="f-uptime">0s</strong></span>
+    <a class="foot-cta" href="https://identities.ai" target="_blank">identities.ai →</a>
+  </div>
+</footer>
+
+<script>
+const counts = {ok:0,no:0,x:0,all:0};
+let evCount = 0;
+const t0 = Date.now();
+
+setInterval(() => {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+  const s = Math.floor((Date.now()-t0)/1000);
+  document.getElementById('f-uptime').textContent = s<60?s+'s':Math.floor(s/60)+'m '+(s%60)+'s';
+}, 1000);
+
+function upd() {
+  ['ok','no','x','all'].forEach(k => document.getElementById('n-'+k).textContent = counts[k]);
+  document.getElementById('ev-count').textContent = evCount + (evCount===1?' event':' events');
+}
+
+function handle(evt) {
+  if (!evt.status) return;
+  evCount++; counts.all++;
+  if (evt.status==='approved') counts.ok++; else counts.no++;
+  if (evt.cross_org) counts.x++;
+  upd();
+
+  if (evt.server==='cloudops' && evt.status==='approved') {
+    document.getElementById('dot-infra').classList.add('done');
+    const r = document.getElementById('r-infra');
+    r.textContent = '✓ CloudOps verified — node provisioned';
+    r.style.color = 'var(--green)';
+  }
+  if (evt.server==='hardwarevendor' && evt.status==='approved') {
+    document.getElementById('dot-proc').classList.add('done');
+    const r = document.getElementById('r-proc');
+    r.textContent = '✓ HardwareVendor verified — order placed';
+    r.style.color = 'var(--green)';
+  }
+
+  document.getElementById('empty').style.display = 'none';
+
+  // Denial flash — the emotional center
+  if (evt.status === 'denied' && (evt.requested || evt.reason)) {
+    document.getElementById('df-requested').textContent = evt.requested || evt.reason || '—';
+    document.getElementById('df-allowed').textContent   = evt.allowed  || 'see mandate constraints';
+    const flash = document.getElementById('denial-flash');
+    flash.classList.add('show');
+    setTimeout(() => flash.classList.remove('show'), 4000);
+  }
+
+  const isPhys = evt.server==='pi'||evt.tool==='physical_access';
+  const ok     = evt.status==='approved';
+  const type   = isPhys?'sky':ok?'ok':'no';
+
+  let icon, hl, sub;
+  if (isPhys && ok) {
+    icon='🔓'; hl='Physical door opened — rack access granted';
+    sub='The Raspberry Pi verified the same mandate offline — <strong>no WiFi, no internet</strong>. The digital authorization that provisioned cloud infrastructure also unlocked a physical door.';
+  } else if (evt.server==='hardwarevendor' && ok) {
+    icon='📦'; hl='Hardware order approved by an outside vendor';
+    sub='<strong>HardwareVendor Inc.</strong> had zero prior relationship with TechCorp. No API key was shared. They verified the agent\'s authority using only TechCorp\'s public key — offline, in under 1ms.';
+  } else if (evt.server==='cloudops' && ok) {
+    icon='☁️'; hl='Replacement cloud node provisioned';
+    sub='The agent presented a <strong>2-hop delegation chain</strong>: SRE signed → Commander delegated → Specialist acted. CloudOps verified all three cryptographic signatures before executing.';
+  } else if (!ok) {
+    icon='🛑'; hl='Action blocked — mandate constraint violated';
+    const reqTxt = evt.requested ? `Requested: <strong>${evt.requested}</strong>. ` : '';
+    const allowTxt = evt.allowed ? `Allowed: <strong>${evt.allowed}</strong>. ` : '';
+    sub=`${reqTxt}${allowTxt}The verifier denied this before execution — the model cannot override a mandate constraint.`;
+  } else {
+    icon='✓'; hl='Action authorized and executed';
+    sub=`Verified offline by <strong>${evt.server||'server'}</strong>. Chain depth: ${evt.chain_depth||'?'} hops.`;
+  }
+
+  const depth = evt.chain_depth ? `<span class="tag t-gry">${evt.chain_depth}-hop chain</span>` : '';
+  const trust = evt.cross_org ? `<span class="tag t-ind">🌐 Cross-org</span>` : `<span class="tag t-gry">Same org</span>`;
+  const status= ok ? `<span class="tag t-ok">✓ Approved</span>` : `<span class="tag t-no">✗ Denied</span>`;
+
+  const xorg = evt.cross_org ? `
+    <div class="xorg-box">
+      <h4>🌐 This is the cross-org moment</h4>
+      <p>HardwareVendor has <strong>no account with Ratify</strong>. No API key was exchanged. No prior arrangement. They verified the cryptographic proof using TechCorp's public key — just like how your browser verifies an HTTPS certificate from a server it's never seen before. This is how Ratify works across any organizational boundary.</p>
+    </div>` : '';
+
+  const id = 'e'+evCount;
+  const card = document.createElement('div');
+  card.className = `ecard ${type}`;
+  card.innerHTML = `
+    <div class="ecard-inner" onclick="tog('${id}')">
+      <div class="ecard-ico">${icon}</div>
+      <div class="ecard-text">
+        <div class="ecard-hl">${hl}</div>
+        <div class="ecard-sub">${sub}</div>
+        <div class="ecard-tags">
+          ${status}${trust}${depth}
+          <span class="tag t-grn">&lt;1ms offline</span>
+          <span class="t-time">${new Date(evt.timestamp||Date.now()).toLocaleTimeString()}</span>
+        </div>
+      </div>
+    </div>
+    ${xorg}
+    <div class="ecard-detail" id="${id}">
+      <div class="dg"><span class="dk">Cert ID</span><span class="dv">${evt.cert_id||'—'}</span></div>
+      <div class="dg"><span class="dk">Agent ID</span><span class="dv">${evt.agent_id||'—'}</span></div>
+      <div class="dg"><span class="dk">Human Issuer</span><span class="dv">${evt.human_id||'—'}</span></div>
+      <div class="dg"><span class="dk">Scope Checked</span><span class="dv">${evt.scope||'—'}</span></div>
+      <div class="dg"><span class="dk">Tool</span><span class="dv">${evt.tool||'—'}</span></div>
+      ${evt.reason?`<div class="dg"><span class="dk">Denial Reason</span><span class="dv" style="color:var(--red)">${evt.reason}</span></div>`:''}
+    </div>`;
+
+  const feed = document.getElementById('feed');
+  feed.prepend(card);
+  while(feed.children.length>51) feed.removeChild(feed.lastChild);
+}
+
+function tog(id){ document.getElementById(id)?.classList.toggle('open'); }
+
+function connect(){
+  const es = new EventSource('http://localhost:8099/events');
+  es.onopen = ()=>{ const p=document.getElementById('pill'); p.classList.remove('offline'); p.classList.add('live'); document.getElementById('pill-txt').textContent='Live'; };
+  es.onmessage = e=>{ try{ handle(JSON.parse(e.data)); }catch{} };
+  es.onerror = ()=>{ const p=document.getElementById('pill'); p.classList.remove('live'); p.classList.add('offline'); document.getElementById('pill-txt').textContent='Reconnecting…'; es.close(); setTimeout(connect,3000); };
+}
+connect();
+</script>
+</body>
+</html>
