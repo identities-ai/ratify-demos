@@ -2,6 +2,8 @@
 
 > **"One mandate. Two worlds. Verified offline."**
 
+![Mandate by Ratify project thumbnail](assets/mandate-devpost-thumbnail.png)
+
 Mandate is a Google AI Agents Challenge demo: a Gemini-powered incident-response agent acts through MCP tools, but every high-impact action must carry a cryptographic Ratify mandate. When the agent exceeds its mandate, the MCP server blocks the action before execution.
 
 Ratify is the authorization layer. Mandate is the agent demo. The dashboard is branded **Ratify Verify** because it shows the live verification/audit feed for Mandate's actions.
