@@ -25,15 +25,55 @@ The primary hackathon path uses Google ADK and requires `GOOGLE_API_KEY`. Smoke 
 ## Architecture
 
 ```
-Gemini Agent (ADK)
-├── CloudOps MCP (port 8090)     ← ratify.Verify + constraint enforcement
-│   └── Org A (TechCorp)
-├── HardwareVendor MCP (port 8091) ← cross-org offline verification
-│   └── Org B (HardwareVendor Inc.)
-├── Event Relay (port 8099)      ← SSE broadcast to dashboard
-└── Dashboard (port 8010)        ← live authorization feed
+                         ┌──────────────────────────────┐
+                         │ TechCorp SRE (human issuer)  │
+                         │ signs narrow Ratify mandate  │
+                         │ max 1 node · us-central1     │
+                         └──────────────┬───────────────┘
+                                        │ SRE -> Commander delegation
+                                        ▼
+┌────────────────────────────────────────────────────────────────────┐
+│ Mandate Agent                                                       │
+│ Gemini + Google ADK incident commander                             │
+│ - reads simulated production incident                               │
+│ - issues short-lived specialist mandates                            │
+│ - calls MCP tools with Ratify proof bundles                         │
+└───────────────┬───────────────────────────────────────┬────────────┘
+                │                                       │
+                │ cloud_provision(...)                  │ request_hardware(...)
+                ▼                                       ▼
+┌──────────────────────────────┐        ┌──────────────────────────────┐
+│ CloudOps MCP                  │        │ HardwareVendor MCP            │
+│ Org A: TechCorp               │        │ Org B: outside vendor         │
+│ port 8090                     │        │ port 8091                     │
+│                               │        │                              │
+│ ratify.Verify(...)            │        │ ratify.Verify(...)            │
+│ + constraint enforcement      │        │ + cross-org verification      │
+│                               │        │                              │
+│ ✓ approve 1 node/us-central1  │        │ ✓ approve hardware request    │
+│ ✕ deny 3 nodes/us-east1       │        │   no TechCorp API key needed  │
+└───────────────┬──────────────┘        └───────────────┬──────────────┘
+                │ verification events                    │ verification events
+                └───────────────────────┬────────────────┘
+                                        ▼
+                         ┌──────────────────────────────┐
+                         │ Event Relay                  │
+                         │ Server-Sent Events · 8099    │
+                         └──────────────┬───────────────┘
+                                        ▼
+                         ┌──────────────────────────────┐
+                         │ Mandate Dashboard            │
+                         │ http://localhost:8010        │
+                         │ live approve/deny/audit feed │
+                         └──────────────────────────────┘
 
-Pi Verifier (offline, no WiFi)   ← C SDK, <1ms, GPIO LED
+Optional physical path:
+
+                         ┌──────────────────────────────┐
+                         │ Raspberry Pi / edge verifier │
+                         │ Ratify C SDK · offline       │
+                         │ same proof pattern           │
+                         └──────────────────────────────┘
 ```
 
 ## What Each Piece Does
