@@ -1,0 +1,2 @@
+httpx>=0.28.0
+ratify-protocol>=1.0.0a7

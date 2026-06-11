@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.mandate-run/
+mandate/.mandate-run/
+
+# Demo-generated keys and proof bundles. The setup script regenerates these.
+mandate/agent/keys/
+mandate/keys/
+
+# Local compiled demo binaries.
+mandate/mcp-server/mcp-server
+mandate/vendor-mcp-server/vendor-mcp-server
+mandate/pi/verifier

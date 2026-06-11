@@ -209,7 +209,7 @@ This is the visceral close: the same authorization model spans cloud software, a
 | Real constraint denial | Region/count/rate constraint must fail visibly. | Dashboard shows red denial row with reason. |
 | Cross-org vendor MCP server | Separate server verifies same proof without shared credentials. | Response includes `cross_org=true`; dashboard shows badge. |
 | Live verification dashboard | Shows every verification event in real time. | Green approval and red denial visible during video. |
-| One-command demo | Local demo starts predictably. | `./run-demo.sh` or equivalent launches services. |
+| One-command demo | Local demo starts predictably. | `./bootstrap-demo.sh` launches services. |
 | 3-minute video script | Narrative maps directly to judging criteria. | Video covers autonomy, action, denial, portability. |
 
 ### P1: Strong Differentiators
@@ -434,7 +434,7 @@ NO_GPIO=1 ./verifier < bundle.json -> PHYSICAL_ACCESS GRANTED
 **Verify:**
 
 ```text
-./run-demo.sh
+./bootstrap-demo.sh
 open dashboard
 python agent/main.py
 ```

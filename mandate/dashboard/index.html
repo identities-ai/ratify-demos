@@ -3,745 +3,1067 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ratify Verify — Live Demo</title>
+<title>Mandate by Ratify — Live Agent Authorization</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
-
 :root {
-  --sky:      #38bdf8;
-  --sky-10:   rgba(56,189,248,0.10);
-  --sky-20:   rgba(56,189,248,0.20);
-  --sky-30:   rgba(56,189,248,0.30);
-  --green:    #10b981;
-  --green-bg: #ecfdf5;
-  --green-bd: #a7f3d0;
-  --red:      #ef4444;
-  --red-bg:   #fef2f2;
-  --red-bd:   #fecaca;
-  --amber:    #f59e0b;
-  --amber-bg: #fffbeb;
-  --amber-bd: #fde68a;
-  --indigo:   #6366f1;
-  --indigo-bg:#eef2ff;
-  --indigo-bd:#c7d2fe;
-  --border:   rgba(0,0,0,0.08);
+  --ink: #101923;
+  --muted: #667381;
+  --soft: #eef3f7;
+  --line: #dbe4ea;
+  --panel: #ffffff;
+  --brand: #15a7d8;
+  --brand-dark: #067aa8;
+  --brand-soft: #e8f8fc;
+  --ok: #0f9f6e;
+  --ok-soft: #e9f8f1;
+  --warn: #d97706;
+  --warn-soft: #fff6df;
+  --bad: #dc2626;
+  --bad-soft: #fff0f0;
+  --violet: #6554d9;
+  --violet-soft: #f0eeff;
+  --shadow: 0 18px 60px rgba(16, 25, 35, 0.10);
 }
 
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 body {
-  background: #f1f5f9;
-  color: #0f172a;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 400;
+  margin: 0;
   min-height: 100vh;
-  overflow-y: auto;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(21,167,216,0.08), transparent 300px),
+    #f6f8fa;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0;
 }
 
-/* ─── STICKY GLASS HEADER ─── */
-header {
+button, input { font: inherit; }
+
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 68px 1fr;
+}
+
+.topbar {
   position: sticky;
   top: 0;
-  z-index: 100;
-  height: 64px;
-  background: rgba(241,245,249,0.75);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-bottom: 1px solid rgba(255,255,255,0.6);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  gap: 20px;
+  padding: 0 28px;
+  background: rgba(255,255,255,0.86);
+  border-bottom: 1px solid rgba(219,228,234,0.9);
+  backdrop-filter: blur(18px);
 }
 
-/* Thin sky-blue shimmer line at bottom of header */
-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--sky-30) 30%, var(--sky-30) 70%, transparent 100%);
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
-.logo { display: flex; align-items: center; gap: 12px; }
-
-.logo-mark {
-  width: 36px; height: 36px; border-radius: 9px;
-  background: var(--sky);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 19px; font-weight: 900; color: white;
-  letter-spacing: -1px;
-  box-shadow: 0 2px 8px rgba(56,189,248,0.4);
+.mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #101923;
+  color: white;
+  font-weight: 800;
+  font-size: 18px;
+  box-shadow: 0 10px 24px rgba(16,25,35,0.18);
 }
 
-.logo-name {
-  font-size: 19px; font-weight: 800;
-  color: #0f172a; letter-spacing: -0.5px;
+.brand-copy { min-width: 0; }
+.brand-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.brand-title span {
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+.brand-sub {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-.logo-divider { width: 1px; height: 18px; background: #e2e8f0; margin: 0 4px; }
-.logo-sub { font-size: 13px; color: #94a3b8; font-weight: 500; }
+.status-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
 
-.header-right { display: flex; align-items: center; gap: 12px; }
-
-.live-pill {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 6px 14px;
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  font-size: 13px; font-weight: 600;
   background: white;
-  border: 1px solid #e2e8f0;
-  color: #94a3b8;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  transition: all 0.3s;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
 }
-.live-pill.live { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
-.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; transition: all 0.3s; }
-.live-pill.live .live-dot { background: var(--green); animation: livepulse 2s ease infinite; }
-@keyframes livepulse { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.3)} 50%{box-shadow:0 0 0 5px rgba(16,185,129,0)} }
+.pill.live { color: #087650; border-color: rgba(15,159,110,0.25); background: var(--ok-soft); }
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #a8b3bd;
+}
+.pill.live .dot {
+  background: var(--ok);
+  box-shadow: 0 0 0 5px rgba(15,159,110,0.12);
+}
+.clock {
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+}
 
-/* ─── PAGE LAYOUT ─── */
-.page {
+.layout {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  min-height: calc(100vh - 68px);
+}
+
+.sidebar {
+  border-right: 1px solid var(--line);
+  background: rgba(255,255,255,0.72);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(16,25,35,0.03);
+}
+
+.panel-pad { padding: 18px; }
+.label {
+  margin: 0 0 10px;
+  color: #80909f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.incident {
+  border-color: rgba(217,119,6,0.30);
+  background: linear-gradient(180deg, #fffaf0, #fff);
+}
+.incident h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.25;
+}
+.incident p {
+  margin: 8px 0 0;
+  color: #6b5b3d;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.mandate-box {
+  display: grid;
+  gap: 10px;
+}
+.scope-row {
   display: flex;
   align-items: flex-start;
-  min-height: calc(100vh - 64px - 60px);
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid #edf2f5;
 }
-
-/* ─── LEFT SIDEBAR (sticky) ─── */
-aside {
-  width: 320px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 64px;
-  height: calc(100vh - 64px);
-  overflow-y: auto;
-  background: white;
-  border-right: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 1px 0 0 rgba(0,0,0,0.04);
-  padding: 24px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-aside::-webkit-scrollbar { width: 4px; }
-aside::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
-
-.s-label {
-  font-size: 10px; font-weight: 800;
-  color: #94a3b8; text-transform: uppercase;
-  letter-spacing: 1.2px; margin-bottom: 10px;
-}
-
-/* Incident card */
-.incident-card {
-  background: var(--amber-bg);
-  border: 1px solid var(--amber-bd);
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-.inc-badge {
-  font-size: 11px; font-weight: 700; color: var(--amber);
-  text-transform: uppercase; letter-spacing: 0.5px;
-  display: flex; align-items: center; gap: 5px; margin-bottom: 7px;
-}
-.incident-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
-.incident-card p  { font-size: 13px; color: #78716c; line-height: 1.55; }
-
-/* Explain */
-.explain { display: flex; flex-direction: column; gap: 12px; }
-.explain-row { display: flex; gap: 10px; align-items: flex-start; }
-.explain-icon {
-  width: 34px; height: 34px; border-radius: 9px;
-  background: var(--sky-10); border: 1px solid var(--sky-20);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
-.explain-row h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-.explain-row p  { font-size: 12px; color: #64748b; line-height: 1.5; }
-
-/* Stats */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.stat {
-  background: #f8fafc; border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 12px; padding: 14px 10px; text-align: center;
-  transition: transform 0.2s;
-}
-.stat-n { font-size: 38px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
-.stat-l { font-size: 11px; font-weight: 600; color: #94a3b8; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-.stat.s-ok  .stat-n { color: var(--green); }
-.stat.s-no  .stat-n { color: var(--red); }
-.stat.s-x   .stat-n { color: var(--indigo); }
-.stat.s-all .stat-n { color: var(--sky); }
-
-/* Chain */
-.chain { display: flex; flex-direction: column; }
-.cn { display: flex; gap: 12px; }
-.csp { display: flex; flex-direction: column; align-items: center; }
-.cdot {
-  width: 13px; height: 13px; border-radius: 50%;
-  border: 2px solid #e2e8f0; background: #f8fafc;
-  flex-shrink: 0; transition: all 0.4s ease;
-}
-.cdot.on   { border-color: var(--sky); background: var(--sky-10); box-shadow: 0 0 0 3px var(--sky-10); }
-.cdot.done { border-color: var(--green); background: var(--green-bg); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
-.cline { width: 2px; flex: 1; min-height: 18px; background: #e2e8f0; }
-.cb { padding-bottom: 18px; }
-.cw { font-size: 14px; font-weight: 700; }
-.cs { font-size: 12px; color: #94a3b8; margin-top: 1px; }
-.cr { font-size: 12px; font-weight: 600; margin-top: 5px; }
-
-/* Protocol box */
-.proto {
-  background: #f8fafc; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px;
-  overflow: hidden;
-}
-.proto-head {
-  padding: 10px 14px; background: white; border-bottom: 1px solid rgba(0,0,0,0.06);
-  font-size: 13px; font-weight: 700; color: #374151;
-  display: flex; align-items: center; gap: 6px;
-}
-.proto-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 9px 14px; border-bottom: 1px solid rgba(0,0,0,0.04);
+.scope-row:first-child { border-top: 0; padding-top: 0; }
+.scope-key {
+  color: var(--muted);
   font-size: 13px;
 }
-.proto-row:last-child { border-bottom: none; }
-.pk { color: #64748b; }
-.pv { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #374151; }
-.pc { color: var(--green); font-weight: 800; font-size: 15px; }
-.pzero { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; }
-
-/* ─── MAIN FEED ─── */
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - 64px - 60px);
+.scope-val {
+  color: var(--ink);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: right;
 }
+.scope-val.ok { color: #087650; font-weight: 600; }
+.scope-val.bad { color: var(--bad); font-weight: 600; }
 
-/* Scenario banner — scrolls with content */
-.scenario {
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.metric {
+  min-height: 84px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+.metric-num {
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 800;
+}
+.metric-title {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.metric.ok .metric-num { color: var(--ok); }
+.metric.bad .metric-num { color: var(--bad); }
+.metric.x .metric-num { color: var(--violet); }
+.metric.all .metric-num { color: var(--brand-dark); }
+
+.timeline {
+  display: grid;
+  gap: 0;
+}
+.step {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 18px;
+}
+.step:last-child { padding-bottom: 0; }
+.step::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 20px;
+  bottom: 0;
+  width: 2px;
+  background: #e4ebf0;
+}
+.step:last-child::after { display: none; }
+.node {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid #b7c4ce;
   background: white;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  padding: 20px 32px;
-  display: flex; gap: 16px; align-items: flex-start;
+  z-index: 1;
 }
-.scenario-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: var(--sky-10); border: 1px solid var(--sky-20);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
+.step.done .node { border-color: var(--ok); background: var(--ok); }
+.step.active .node { border-color: var(--brand); background: var(--brand-soft); }
+.step-title {
+  font-size: 13px;
+  font-weight: 800;
 }
-.scenario h2 { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
-.scenario p  { font-size: 13px; color: #64748b; line-height: 1.6; }
-.scenario p strong { color: #0f172a; font-weight: 600; }
+.step-sub {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.step-result {
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.step.done .step-result { color: var(--ok); }
+
+.main {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.hero {
+  padding: 30px 34px 24px;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 92% 12%, rgba(21,167,216,0.16), transparent 26%),
+    linear-gradient(180deg, #ffffff, #fbfdfe);
+}
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--brand-dark);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  margin: 0;
+  max-width: 860px;
+  font-size: 30px;
+  line-height: 1.12;
+  font-weight: 800;
+}
+.hero p {
+  margin: 12px 0 0;
+  max-width: 900px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.hero strong { color: var(--ink); font-weight: 700; }
+
+.moment-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 34px;
+  border-bottom: 1px solid var(--line);
+  background: #f9fbfc;
+}
+.moment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+}
+.moment-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+.moment.ok .moment-icon { background: var(--ok-soft); color: var(--ok); }
+.moment.bad .moment-icon { background: var(--bad-soft); color: var(--bad); }
+.moment.x .moment-icon { background: var(--violet-soft); color: var(--violet); }
+.moment h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+}
+.moment p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
 
 .feed-head {
-  padding: 14px 32px;
-  display: flex; align-items: center; justify-content: space-between;
-  background: #f8fafc;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
   position: sticky;
-  top: 64px;
-  z-index: 50;
+  top: 68px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 34px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(246,248,250,0.92);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(248,250,252,0.9);
 }
-.feed-head-title { font-size: 14px; font-weight: 700; color: #374151; display: flex; align-items: center; gap: 8px; }
-.ev-pill {
-  background: white; border: 1px solid #e2e8f0;
-  border-radius: 999px; padding: 2px 10px;
-  font-size: 12px; color: #64748b;
+.feed-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 800;
 }
-.feed-hint { font-size: 12px; color: #94a3b8; }
+.event-count {
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: white;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.feed-note {
+  color: var(--muted);
+  font-size: 12px;
+}
 
-/* Feed */
 .feed {
-  padding: 20px 32px;
+  padding: 22px 34px 36px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  flex: 1;
+  gap: 12px;
 }
 
-/* Empty */
-#empty {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 400px; gap: 14px; text-align: center; color: #94a3b8;
-}
-.e-ring {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: var(--sky-10); border: 2px solid var(--sky-20);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px; animation: breathe 3s ease infinite;
-}
-@keyframes breathe { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.07);opacity:.8} }
-#empty h3 { font-size: 18px; font-weight: 700; color: #334155; }
-#empty p  { font-size: 14px; max-width: 340px; line-height: 1.6; }
-#empty code {
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--sky); background: var(--sky-10);
-  padding: 2px 8px; border-radius: 5px; font-size: 13px;
-}
-
-/* ─── EVENT CARD ─── */
-.ecard {
-  background: white;
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 14px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
-  animation: popin 0.35s cubic-bezier(0.16,1,0.3,1) both;
-}
-.ecard:hover {
-  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
-  border-color: rgba(0,0,0,0.12);
-}
-.ecard.ok  { border-left: 4px solid var(--green); }
-.ecard.no  { border-left: 4px solid var(--red); }
-.ecard.sky { border-left: 4px solid var(--sky); }
-
-@keyframes popin { from{opacity:0;transform:translateY(10px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
-
-.ecard-inner { padding: 18px 22px; display: flex; gap: 16px; }
-
-.ecard-ico {
-  width: 46px; height: 46px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
-}
-.ecard.ok  .ecard-ico { background: var(--green-bg); }
-.ecard.no  .ecard-ico { background: var(--red-bg); }
-.ecard.sky .ecard-ico { background: var(--sky-10); }
-
-.ecard-text { flex: 1; }
-.ecard-hl   { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 5px; line-height: 1.3; }
-.ecard-sub  { font-size: 13px; color: #64748b; line-height: 1.6; }
-.ecard-sub strong { color: #374151; font-weight: 600; }
-
-.ecard-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; align-items: center; }
-
-.tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 12px; border-radius: 999px;
-  font-size: 12px; font-weight: 700;
-}
-.t-ok  { background: var(--green-bg); color: #15803d; }
-.t-no  { background: var(--red-bg);   color: #b91c1c; }
-.t-sky { background: var(--sky-10);   color: #0369a1; }
-.t-ind { background: var(--indigo-bg);color: #5b21b6; }
-.t-gry { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
-.t-grn { background: var(--green-bg); color: #15803d; font-family:'JetBrains Mono',monospace; }
-.t-time { font-family:'JetBrains Mono',monospace; font-size:11px; color:#94a3b8; margin-left: auto; }
-
-/* Cross-org callout */
-.xorg-box {
-  margin: 0 22px 16px;
-  padding: 14px 16px;
-  background: var(--indigo-bg);
-  border: 1px solid var(--indigo-bd);
-  border-radius: 10px;
-}
-.xorg-box h4 { font-size: 14px; font-weight: 800; color: var(--indigo); margin-bottom: 5px; }
-.xorg-box p  { font-size: 13px; color: #4b5563; line-height: 1.6; }
-.xorg-box strong { color: #1f2937; }
-
-/* Expand detail */
-.ecard-detail {
-  display: none;
-  border-top: 1px solid rgba(0,0,0,0.06);
-  background: #f8fafc;
-  padding: 14px 22px;
-  gap: 18px; flex-wrap: wrap;
-}
-.ecard-detail.open { display: flex; }
-.dg { display: flex; flex-direction: column; gap: 3px; min-width: 180px; }
-.dk { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
-.dv { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #374151; word-break: break-all; line-height: 1.5; }
-
-/* ─── DENIAL FLASH OVERLAY ─── */
-#denial-flash {
-  position: fixed; inset: 0;
-  display: none;
-  align-items: center; justify-content: center;
-  z-index: 9999;
-  background: rgba(239,68,68,0.12);
-  backdrop-filter: blur(3px);
-  animation: flashIn 0.2s ease;
-}
-#denial-flash.show { display: flex; }
-@keyframes flashIn { from{opacity:0} to{opacity:1} }
-
-.denial-card {
-  background: white;
-  border: 2px solid #ef4444;
-  border-radius: 20px;
-  padding: 40px 56px;
+.empty {
+  min-height: 340px;
+  display: grid;
+  place-items: center;
   text-align: center;
-  box-shadow: 0 24px 80px rgba(239,68,68,0.25);
-  animation: cardPop 0.3s cubic-bezier(0.16,1,0.3,1);
-  max-width: 540px;
+  color: var(--muted);
 }
-@keyframes cardPop { from{transform:scale(0.92);opacity:0} to{transform:scale(1);opacity:1} }
-
-.denial-icon { font-size: 48px; margin-bottom: 16px; }
-.denial-title {
-  font-size: 22px; font-weight: 900; color: #ef4444;
-  text-transform: uppercase; letter-spacing: 0.5px;
-  margin-bottom: 20px;
+.empty-inner {
+  max-width: 420px;
+  padding: 28px;
+  border: 1px dashed #bfd0dc;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.65);
 }
-.denial-row {
-  display: flex; justify-content: space-between; gap: 20px;
-  background: #f8fafc; border-radius: 10px; padding: 14px 18px;
-  margin-bottom: 10px; text-align: left;
+.empty-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-weight: 800;
+  font-size: 22px;
 }
-.denial-row-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
-.denial-row-val   { font-size: 14px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-.denial-row-val.bad { color: #ef4444; }
-.denial-row-val.good { color: #16a34a; }
-.denial-verdict {
-  margin-top: 18px;
-  font-size: 13px; color: #64748b; line-height: 1.6;
+.empty h2 {
+  margin: 0;
+  font-size: 18px;
 }
-.denial-verdict strong { color: #0f172a; }
-
-/* ─── FOOTER ─── */
-footer {
+.empty p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.empty code {
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
   background: white;
-  border-top: 1px solid rgba(0,0,0,0.06);
-  padding: 16px 32px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 60px;
+  color: var(--brand-dark);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
 }
-.foot-l { font-size: 13px; color: #94a3b8; }
-.foot-l strong { color: var(--sky); font-weight: 700; }
-.foot-r { display: flex; align-items: center; gap: 16px; }
-.foot-stat { font-size: 13px; color: #94a3b8; }
-.foot-stat strong { color: #374151; font-weight: 600; }
-.foot-cta {
-  background: var(--sky); color: white;
-  padding: 8px 20px; border-radius: 8px;
-  font-size: 13px; font-weight: 700;
+
+.event-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 2px rgba(16,25,35,0.04);
+  animation: enter .28s ease both;
+}
+@keyframes enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.event-card.ok { border-left-color: var(--ok); }
+.event-card.bad { border-left-color: var(--bad); }
+.event-card.x { border-left-color: var(--violet); }
+.event-card.physical { border-left-color: var(--brand); }
+
+.event-main {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+}
+.event-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+.ok .event-icon { background: var(--ok-soft); color: var(--ok); }
+.bad .event-icon { background: var(--bad-soft); color: var(--bad); }
+.x .event-icon { background: var(--violet-soft); color: var(--violet); }
+.physical .event-icon { background: var(--brand-soft); color: var(--brand-dark); }
+
+.event-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.event-head h2 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+}
+.event-time {
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.event-copy {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.event-copy strong { color: var(--ink); }
+.tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+.tag {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.tag.ok { color: #087650; background: var(--ok-soft); }
+.tag.bad { color: #a01818; background: var(--bad-soft); }
+.tag.x { color: #4f3bbb; background: var(--violet-soft); }
+.tag.neutral { color: #526273; background: #f1f5f8; border: 1px solid #e0e8ee; }
+.tag.code { font-family: "JetBrains Mono", monospace; color: var(--brand-dark); background: var(--brand-soft); }
+
+.callout {
+  margin: 0 18px 16px 74px;
+  padding: 13px 14px;
+  border: 1px solid #d8d2ff;
+  border-radius: 8px;
+  background: var(--violet-soft);
+}
+.callout h3 {
+  margin: 0 0 4px;
+  color: #4f3bbb;
+  font-size: 13px;
+}
+.callout p {
+  margin: 0;
+  color: #4d5561;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.details {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  padding: 14px 18px 16px 74px;
+  border-top: 1px solid var(--line);
+  background: #f8fafc;
+}
+.details.open { display: grid; }
+.detail-k {
+  display: block;
+  margin-bottom: 4px;
+  color: #8594a3;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.detail-v {
+  color: #344252;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.detail-v.bad { color: var(--bad); }
+
+.denial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(16,25,35,0.38);
+  backdrop-filter: blur(6px);
+}
+.denial-overlay.show { display: flex; }
+.denial-card {
+  width: min(620px, 100%);
+  padding: 28px;
+  border: 1px solid rgba(220,38,38,0.30);
+  border-radius: 10px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+.denial-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.denial-symbol {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--bad-soft);
+  color: var(--bad);
+  font-size: 24px;
+  font-weight: 800;
+}
+.denial-title {
+  margin: 0;
+  color: var(--bad);
+  font-size: 20px;
+  line-height: 1.25;
+}
+.denial-sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.compare-box {
+  padding: 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+}
+.compare-label {
+  margin-bottom: 7px;
+  color: #81909e;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.compare-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.compare-value.bad { color: var(--bad); }
+.compare-value.good { color: var(--ok); }
+.denial-footer {
+  margin-top: 16px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 34px;
+  border-top: 1px solid var(--line);
+  background: white;
+  color: var(--muted);
+  font-size: 12px;
+}
+.footer strong { color: var(--brand-dark); }
+.footer a {
+  color: var(--ink);
+  font-weight: 800;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(56,189,248,0.35);
-  transition: all 0.2s;
 }
-.foot-cta:hover { background: #0284c7; box-shadow: 0 4px 14px rgba(56,189,248,0.4); transform: translateY(-1px); }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar {
+    position: static;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .moment-bar { grid-template-columns: 1fr; }
+  .feed-head { top: 68px; }
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    height: auto;
+    min-height: 68px;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 18px;
+  }
+  .status-strip { justify-content: flex-start; }
+  .hero, .moment-bar, .feed-head, .feed, .footer { padding-left: 18px; padding-right: 18px; }
+  .hero h1 { font-size: 24px; }
+  .event-main { grid-template-columns: 1fr; }
+  .event-icon { width: 36px; height: 36px; }
+  .callout, .details { margin-left: 18px; padding-left: 14px; }
+  .compare { grid-template-columns: 1fr; }
+  .footer { flex-direction: column; align-items: flex-start; }
+}
 </style>
 </head>
 <body>
-
-<!-- ── STICKY GLASS HEADER ── -->
-<!-- DENIAL FLASH OVERLAY -->
-<div id="denial-flash" onclick="this.classList.remove('show')">
+<div class="denial-overlay" id="denial-flash" onclick="this.classList.remove('show')">
   <div class="denial-card">
-    <div class="denial-icon">🛑</div>
-    <div class="denial-title">Mandate Constraint Violated</div>
-    <div class="denial-row">
+    <div class="denial-top">
+      <div class="denial-symbol">!</div>
       <div>
-        <div class="denial-row-label">Requested</div>
-        <div class="denial-row-val bad" id="df-requested">—</div>
-      </div>
-      <div style="width:1px;background:#e2e8f0"></div>
-      <div>
-        <div class="denial-row-label">Allowed by Mandate</div>
-        <div class="denial-row-val good" id="df-allowed">—</div>
+        <h2 class="denial-title">Mandate constraint violated</h2>
+        <p class="denial-sub">The verifier blocked the action before execution.</p>
       </div>
     </div>
-    <div class="denial-verdict">
-      <strong>The action was denied before execution.</strong><br>
-      The verifier enforced this — not the model.<br>
-      The agent is escalating to the on-call SRE.
+    <div class="compare">
+      <div class="compare-box">
+        <div class="compare-label">Agent requested</div>
+        <div class="compare-value bad" id="df-requested">—</div>
+      </div>
+      <div class="compare-box">
+        <div class="compare-label">Mandate allowed</div>
+        <div class="compare-value good" id="df-allowed">—</div>
+      </div>
+    </div>
+    <div class="denial-footer">
+      <strong>The model asked. The verifier said no.</strong> Authority stayed bounded, and the action never executed.
     </div>
   </div>
 </div>
 
-<header>
-  <div class="logo">
-    <div class="logo-mark">R</div>
-    <span class="logo-name">Ratify Verify</span>
-    <div class="logo-divider"></div>
-    <span class="logo-sub">Autonomous Agent Authorization</span>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark">R</div>
+      <div class="brand-copy">
+        <div class="brand-title">Mandate <span>by Ratify</span></div>
+        <div class="brand-sub">Live authorization for autonomous agent actions</div>
+      </div>
+    </div>
+    <div class="status-strip">
+      <span class="clock" id="clock">—</span>
+      <div class="pill" id="pill"><span class="dot"></span><span id="pill-txt">Connecting</span></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <section class="panel incident panel-pad">
+        <p class="label">Active incident</p>
+        <h2>Database cascade failure</h2>
+        <p>Two production replicas are degraded. The on-call SRE is offline, and a Gemini ADK incident commander is acting under a narrow mandate.</p>
+      </section>
+
+      <section class="panel panel-pad">
+        <p class="label">Mandate bounds</p>
+        <div class="mandate-box">
+          <div class="scope-row"><span class="scope-key">Cloud region</span><span class="scope-val ok">us-central1 only</span></div>
+          <div class="scope-row"><span class="scope-key">Provision limit</span><span class="scope-val ok">max 1 node</span></div>
+          <div class="scope-row"><span class="scope-key">Denied example</span><span class="scope-val bad">3 nodes in us-east1</span></div>
+          <div class="scope-row"><span class="scope-key">Vendor action</span><span class="scope-val ok">hardware support</span></div>
+        </div>
+      </section>
+
+      <section class="panel panel-pad">
+        <p class="label">Results</p>
+        <div class="metrics">
+          <div class="metric ok"><div class="metric-num" id="n-ok">0</div><div class="metric-title">Approved</div></div>
+          <div class="metric bad"><div class="metric-num" id="n-no">0</div><div class="metric-title">Denied</div></div>
+          <div class="metric x"><div class="metric-num" id="n-x">0</div><div class="metric-title">Cross-org</div></div>
+          <div class="metric all"><div class="metric-num" id="n-all">0</div><div class="metric-title">Total events</div></div>
+        </div>
+      </section>
+
+      <section class="panel panel-pad">
+        <p class="label">Delegation chain</p>
+        <div class="timeline">
+          <div class="step done">
+            <div class="node"></div>
+            <div><div class="step-title">SRE human issuer</div><div class="step-sub">Signed the original mandate before going offline.</div><div class="step-result">Mandate issued</div></div>
+          </div>
+          <div class="step done">
+            <div class="node"></div>
+            <div><div class="step-title">Incident Commander AI</div><div class="step-sub">Receives authority and delegates narrow tasks at runtime.</div><div class="step-result">Commander active</div></div>
+          </div>
+          <div class="step active" id="step-infra">
+            <div class="node"></div>
+            <div><div class="step-title">Infrastructure Specialist</div><div class="step-sub">Calls CloudOps MCP for provisioning.</div><div class="step-result" id="r-infra">Awaiting verification</div></div>
+          </div>
+          <div class="step active" id="step-proc">
+            <div class="node"></div>
+            <div><div class="step-title">Procurement Specialist</div><div class="step-sub">Calls HardwareVendor MCP for replacement hardware.</div><div class="step-result" id="r-proc">Awaiting verification</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-pad">
+        <p class="label">Protocol surface</p>
+        <div class="mandate-box">
+          <div class="scope-row"><span class="scope-key">Verification</span><span class="scope-val ok">offline</span></div>
+          <div class="scope-row"><span class="scope-key">SDKs in demo</span><span class="scope-val">Python + Go</span></div>
+          <div class="scope-row"><span class="scope-key">Signatures</span><span class="scope-val">Ed25519 + ML-DSA-65</span></div>
+          <div class="scope-row"><span class="scope-key">Issuer callback</span><span class="scope-val ok">not required</span></div>
+        </div>
+      </section>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <p class="eyebrow">Google AI Agents Challenge · Track 1 Build</p>
+        <h1>An autonomous agent can act. Its authority stays bounded.</h1>
+        <p><strong>Mandate</strong> shows a Gemini ADK incident-response agent calling MCP tools across cloud and vendor systems. Each tool verifies a Ratify proof bundle before execution, so safe actions proceed and out-of-bounds actions stop immediately.</p>
+      </section>
+
+      <section class="moment-bar">
+        <div class="moment ok">
+          <div class="moment-icon">✓</div>
+          <div><h3>Approved cloud action</h3><p>One replacement node in the allowed region.</p></div>
+        </div>
+        <div class="moment bad">
+          <div class="moment-icon">!</div>
+          <div><h3>Denied unsafe action</h3><p>Three nodes in the wrong region are blocked.</p></div>
+        </div>
+        <div class="moment x">
+          <div class="moment-icon">↗</div>
+          <div><h3>Cross-org hardware</h3><p>Vendor verifies authority without a TechCorp API key.</p></div>
+        </div>
+      </section>
+
+      <div class="feed-head">
+        <div class="feed-title">Live authorization feed <span class="event-count" id="ev-count">0 events</span></div>
+        <div class="feed-note">Click an event to inspect the proof details</div>
+      </div>
+
+      <section class="feed" id="feed">
+        <div class="empty" id="empty">
+          <div class="empty-inner">
+            <div class="empty-icon">R</div>
+            <h2>Ready for the incident run</h2>
+            <p>Run <code>./bootstrap-demo.sh --gemini</code> to start the Gemini ADK agent. Use <code>--smoke</code> only for local verifier testing.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div><strong>Ratify Verify</strong> audit view · every row is emitted after MCP-side verification</div>
+        <a href="https://identities.ai" target="_blank" rel="noreferrer">identities.ai</a>
+      </footer>
+    </main>
   </div>
-  <div class="header-right">
-    <span id="clock" style="font-size:13px;color:#94a3b8;font-family:'JetBrains Mono',monospace">—</span>
-    <div class="live-pill offline" id="pill">
-      <div class="live-dot"></div>
-      <span id="pill-txt">Connecting…</span>
-    </div>
-  </div>
-</header>
-
-<!-- ── PAGE ── -->
-<div class="page">
-
-  <!-- LEFT SIDEBAR -->
-  <aside>
-
-    <div>
-      <div class="s-label">Active Incident</div>
-      <div class="incident-card">
-        <div class="inc-badge">🚨 In Progress</div>
-        <h3>Database cascade failure</h3>
-        <p>Nodes db-prod-7 and db-prod-8 degraded. The SRE is offline. An AI agent is responding autonomously.</p>
-      </div>
-    </div>
-
-    <div>
-      <div class="s-label">What You're Watching</div>
-      <div class="explain">
-        <div class="explain-row">
-          <div class="explain-icon">✍️</div>
-          <div>
-            <h4>SRE pre-authorized the agent</h4>
-            <p>Before going offline, the SRE signed a cryptographic mandate — a permission slip with hard limits.</p>
-          </div>
-        </div>
-        <div class="explain-row">
-          <div class="explain-icon">🤖</div>
-          <div>
-            <h4>Agent acts within those limits</h4>
-            <p>Every action is checked against the mandate. Exceed the limits — blocked automatically.</p>
-          </div>
-        </div>
-        <div class="explain-row">
-          <div class="explain-icon">🔐</div>
-          <div>
-            <h4>Anyone can verify — offline</h4>
-            <p>Even a vendor who's never heard of this company can verify in &lt;1ms, with zero network calls.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="s-label">Results</div>
-      <div class="stats">
-        <div class="stat s-ok" ><div class="stat-n" id="n-ok">0</div> <div class="stat-l">Approved</div></div>
-        <div class="stat s-no" ><div class="stat-n" id="n-no">0</div> <div class="stat-l">Denied</div></div>
-        <div class="stat s-x"  ><div class="stat-n" id="n-x">0</div>  <div class="stat-l">Cross-Org</div></div>
-        <div class="stat s-all"><div class="stat-n" id="n-all">0</div><div class="stat-l">Total</div></div>
-      </div>
-    </div>
-
-    <div>
-      <div class="s-label">Chain of Delegation</div>
-      <div class="chain">
-        <div class="cn">
-          <div class="csp"><div class="cdot on"></div><div class="cline"></div></div>
-          <div class="cb">
-            <div class="cw">SRE · Human</div>
-            <div class="cs">Signed the mandate · now offline</div>
-          </div>
-        </div>
-        <div class="cn">
-          <div class="csp"><div class="cdot on"></div><div class="cline"></div></div>
-          <div class="cb">
-            <div class="cw">Incident Commander AI</div>
-            <div class="cs">Received mandate · sub-delegated at runtime</div>
-          </div>
-        </div>
-        <div class="cn">
-          <div class="csp"><div class="cdot" id="dot-infra"></div><div class="cline" style="min-height:14px"></div></div>
-          <div class="cb" style="padding-bottom:12px">
-            <div class="cw">Infrastructure Specialist AI</div>
-            <div class="cs">Cloud provisioning · depth-2 chain</div>
-            <div class="cr" id="r-infra" style="color:#94a3b8">⬦ Awaiting…</div>
-          </div>
-        </div>
-        <div class="cn">
-          <div class="csp"><div class="cdot" id="dot-proc"></div></div>
-          <div class="cb" style="padding-bottom:0">
-            <div class="cw">Procurement Specialist AI</div>
-            <div class="cs">Hardware &amp; physical · depth-2 chain</div>
-            <div class="cr" id="r-proc" style="color:#94a3b8">⬦ Awaiting…</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="s-label">Protocol</div>
-      <div class="proto">
-        <div class="proto-head">🔐 Ratify Protocol v1</div>
-        <div class="proto-row"><span class="pk">Algorithm</span><span class="pv">Ed25519 + ML-DSA-65</span></div>
-        <div class="proto-row"><span class="pk">Quantum-safe</span><span class="pc">✓</span></div>
-        <div class="proto-row"><span class="pk">Offline verify</span><span class="pc">✓</span></div>
-        <div class="proto-row"><span class="pk">Network calls</span><span class="pzero">Zero</span></div>
-        <div class="proto-row"><span class="pk">Latency</span><span class="pzero">&lt;1ms</span></div>
-        <div class="proto-row"><span class="pk">Max chain</span><span class="pv">3 hops</span></div>
-      </div>
-    </div>
-
-  </aside>
-
-  <!-- MAIN -->
-  <main>
-
-    <div class="scenario">
-      <div class="scenario-icon">🤖</div>
-      <div>
-        <h2>Autonomous Incident Response — In Progress</h2>
-        <p>An AI agent is provisioning infrastructure and ordering hardware <strong>without human approval</strong>. Every action is cryptographically authorized by a mandate the SRE signed before going offline. Watch events appear below as each action executes.</p>
-      </div>
-    </div>
-
-    <div class="feed-head">
-      <div class="feed-head-title">
-        Live Authorization Events
-        <span class="ev-pill" id="ev-count">0 events</span>
-      </div>
-      <span class="feed-hint">Click any event for the cryptographic proof</span>
-    </div>
-
-    <div class="feed" id="feed">
-      <div id="empty">
-        <div class="e-ring">⬡</div>
-        <h3>Ready to go</h3>
-        <p>Run <code>python main.py</code> to trigger the incident and watch the agent respond in real time.</p>
-      </div>
-    </div>
-
-  </main>
 </div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="foot-l">Powered by <strong>Ratify Verify</strong> · Cryptographic authorization for autonomous agents</div>
-  <div class="foot-r">
-    <span class="foot-stat">Uptime: <strong id="f-uptime">0s</strong></span>
-    <a class="foot-cta" href="https://identities.ai" target="_blank">identities.ai →</a>
-  </div>
-</footer>
 
 <script>
-const counts = {ok:0,no:0,x:0,all:0};
+const counts = { ok: 0, no: 0, x: 0, all: 0 };
 let evCount = 0;
-const t0 = Date.now();
+const startedAt = Date.now();
 
 setInterval(() => {
   document.getElementById('clock').textContent = new Date().toLocaleTimeString();
-  const s = Math.floor((Date.now()-t0)/1000);
-  document.getElementById('f-uptime').textContent = s<60?s+'s':Math.floor(s/60)+'m '+(s%60)+'s';
 }, 1000);
 
-function upd() {
-  ['ok','no','x','all'].forEach(k => document.getElementById('n-'+k).textContent = counts[k]);
-  document.getElementById('ev-count').textContent = evCount + (evCount===1?' event':' events');
+function escapeHtml(value) {
+  return String(value ?? '—')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function updateCounts() {
+  document.getElementById('n-ok').textContent = counts.ok;
+  document.getElementById('n-no').textContent = counts.no;
+  document.getElementById('n-x').textContent = counts.x;
+  document.getElementById('n-all').textContent = counts.all;
+  document.getElementById('ev-count').textContent = `${evCount} ${evCount === 1 ? 'event' : 'events'}`;
+}
+
+function markInfra() {
+  const step = document.getElementById('step-infra');
+  step.classList.remove('active');
+  step.classList.add('done');
+  document.getElementById('r-infra').textContent = 'CloudOps verified';
+}
+
+function markProcurement() {
+  const step = document.getElementById('step-proc');
+  step.classList.remove('active');
+  step.classList.add('done');
+  document.getElementById('r-proc').textContent = 'Vendor verified';
+}
+
+function showDenial(evt) {
+  document.getElementById('df-requested').textContent = evt.requested || evt.reason || 'Denied request';
+  document.getElementById('df-allowed').textContent = evt.allowed || 'See mandate constraints';
+  const flash = document.getElementById('denial-flash');
+  flash.classList.add('show');
+  setTimeout(() => flash.classList.remove('show'), 4300);
+}
+
+function eventModel(evt) {
+  const ok = evt.status === 'approved';
+  const denied = !ok;
+  const crossOrg = Boolean(evt.cross_org);
+  const physical = evt.server === 'pi' || evt.tool === 'physical_access';
+
+  if (physical) {
+    return {
+      cls: 'physical',
+      symbol: 'P',
+      title: 'Physical access authorized',
+      copy: 'The same mandate pattern verifies at the edge without WiFi or an issuer callback.'
+    };
+  }
+
+  if (crossOrg && ok) {
+    return {
+      cls: 'x',
+      symbol: '↗',
+      title: 'Hardware order approved by outside vendor',
+      copy: '<strong>HardwareVendor Inc.</strong> verified the proof bundle locally. No TechCorp API key, no shared auth system, no issuer callback.'
+    };
+  }
+
+  if (evt.server === 'cloudops' && ok) {
+    return {
+      cls: 'ok',
+      symbol: '✓',
+      title: 'Replacement cloud node provisioned',
+      copy: 'CloudOps verified the delegation chain and confirmed the request stayed inside the mandate.'
+    };
+  }
+
+  if (denied) {
+    const requested = evt.requested ? `Requested: <strong>${escapeHtml(evt.requested)}</strong>. ` : '';
+    const allowed = evt.allowed ? `Allowed: <strong>${escapeHtml(evt.allowed)}</strong>. ` : '';
+    return {
+      cls: 'bad',
+      symbol: '!',
+      title: 'Action blocked before execution',
+      copy: `${requested}${allowed}The verifier enforced the mandate; the model cannot override it.`
+    };
+  }
+
+  return {
+    cls: ok ? 'ok' : 'bad',
+    symbol: ok ? '✓' : '!',
+    title: ok ? 'Action authorized' : 'Action denied',
+    copy: `Verified by <strong>${escapeHtml(evt.server || 'MCP server')}</strong>.`
+  };
+}
+
+function tagsFor(evt) {
+  const ok = evt.status === 'approved';
+  const status = ok
+    ? '<span class="tag ok">Approved</span>'
+    : '<span class="tag bad">Denied</span>';
+  const org = evt.cross_org
+    ? '<span class="tag x">Cross-org</span>'
+    : '<span class="tag neutral">Same org</span>';
+  const depth = evt.chain_depth
+    ? `<span class="tag neutral">${escapeHtml(evt.chain_depth)}-hop chain</span>`
+    : '';
+  return `${status}${org}${depth}<span class="tag code">&lt;1ms verify</span>`;
+}
+
+function detail(label, value, cls = '') {
+  return `<div><span class="detail-k">${label}</span><span class="detail-v ${cls}">${escapeHtml(value || '—')}</span></div>`;
 }
 
 function handle(evt) {
   if (!evt.status) return;
-  evCount++; counts.all++;
-  if (evt.status==='approved') counts.ok++; else counts.no++;
-  if (evt.cross_org) counts.x++;
-  upd();
 
-  if (evt.server==='cloudops' && evt.status==='approved') {
-    document.getElementById('dot-infra').classList.add('done');
-    const r = document.getElementById('r-infra');
-    r.textContent = '✓ CloudOps verified — node provisioned';
-    r.style.color = 'var(--green)';
-  }
-  if (evt.server==='hardwarevendor' && evt.status==='approved') {
-    document.getElementById('dot-proc').classList.add('done');
-    const r = document.getElementById('r-proc');
-    r.textContent = '✓ HardwareVendor verified — order placed';
-    r.style.color = 'var(--green)';
-  }
+  evCount += 1;
+  counts.all += 1;
+  if (evt.status === 'approved') counts.ok += 1;
+  else counts.no += 1;
+  if (evt.cross_org) counts.x += 1;
+  updateCounts();
 
-  document.getElementById('empty').style.display = 'none';
+  if (evt.server === 'cloudops' && evt.status === 'approved') markInfra();
+  if (evt.server === 'hardwarevendor' && evt.status === 'approved') markProcurement();
+  if (evt.status === 'denied' && (evt.requested || evt.reason)) showDenial(evt);
 
-  // Denial flash — the emotional center
-  if (evt.status === 'denied' && (evt.requested || evt.reason)) {
-    document.getElementById('df-requested').textContent = evt.requested || evt.reason || '—';
-    document.getElementById('df-allowed').textContent   = evt.allowed  || 'see mandate constraints';
-    const flash = document.getElementById('denial-flash');
-    flash.classList.add('show');
-    setTimeout(() => flash.classList.remove('show'), 4000);
-  }
+  const empty = document.getElementById('empty');
+  if (empty) empty.style.display = 'none';
 
-  const isPhys = evt.server==='pi'||evt.tool==='physical_access';
-  const ok     = evt.status==='approved';
-  const type   = isPhys?'sky':ok?'ok':'no';
-
-  let icon, hl, sub;
-  if (isPhys && ok) {
-    icon='🔓'; hl='Physical door opened — rack access granted';
-    sub='The Raspberry Pi verified the same mandate offline — <strong>no WiFi, no internet</strong>. The digital authorization that provisioned cloud infrastructure also unlocked a physical door.';
-  } else if (evt.server==='hardwarevendor' && ok) {
-    icon='📦'; hl='Hardware order approved by an outside vendor';
-    sub='<strong>HardwareVendor Inc.</strong> had zero prior relationship with TechCorp. No API key was shared. They verified the agent\'s authority using only TechCorp\'s public key — offline, in under 1ms.';
-  } else if (evt.server==='cloudops' && ok) {
-    icon='☁️'; hl='Replacement cloud node provisioned';
-    sub='The agent presented a <strong>2-hop delegation chain</strong>: SRE signed → Commander delegated → Specialist acted. CloudOps verified all three cryptographic signatures before executing.';
-  } else if (!ok) {
-    icon='🛑'; hl='Action blocked — mandate constraint violated';
-    const reqTxt = evt.requested ? `Requested: <strong>${evt.requested}</strong>. ` : '';
-    const allowTxt = evt.allowed ? `Allowed: <strong>${evt.allowed}</strong>. ` : '';
-    sub=`${reqTxt}${allowTxt}The verifier denied this before execution — the model cannot override a mandate constraint.`;
-  } else {
-    icon='✓'; hl='Action authorized and executed';
-    sub=`Verified offline by <strong>${evt.server||'server'}</strong>. Chain depth: ${evt.chain_depth||'?'} hops.`;
-  }
-
-  const depth = evt.chain_depth ? `<span class="tag t-gry">${evt.chain_depth}-hop chain</span>` : '';
-  const trust = evt.cross_org ? `<span class="tag t-ind">🌐 Cross-org</span>` : `<span class="tag t-gry">Same org</span>`;
-  const status= ok ? `<span class="tag t-ok">✓ Approved</span>` : `<span class="tag t-no">✗ Denied</span>`;
-
+  const model = eventModel(evt);
+  const id = `event-${evCount}`;
   const xorg = evt.cross_org ? `
-    <div class="xorg-box">
-      <h4>🌐 This is the cross-org moment</h4>
-      <p>HardwareVendor has <strong>no account with Ratify</strong>. No API key was exchanged. No prior arrangement. They verified the cryptographic proof using TechCorp's public key — just like how your browser verifies an HTTPS certificate from a server it's never seen before. This is how Ratify works across any organizational boundary.</p>
+    <div class="callout">
+      <h3>Cross-org verification</h3>
+      <p>HardwareVendor accepts the mandate because it can verify the proof locally. The agent does not receive broad vendor credentials.</p>
     </div>` : '';
 
-  const id = 'e'+evCount;
-  const card = document.createElement('div');
-  card.className = `ecard ${type}`;
+  const card = document.createElement('article');
+  card.className = `event-card ${model.cls}`;
   card.innerHTML = `
-    <div class="ecard-inner" onclick="tog('${id}')">
-      <div class="ecard-ico">${icon}</div>
-      <div class="ecard-text">
-        <div class="ecard-hl">${hl}</div>
-        <div class="ecard-sub">${sub}</div>
-        <div class="ecard-tags">
-          ${status}${trust}${depth}
-          <span class="tag t-grn">&lt;1ms offline</span>
-          <span class="t-time">${new Date(evt.timestamp||Date.now()).toLocaleTimeString()}</span>
+    <div class="event-main" onclick="toggleDetails('${id}')">
+      <div class="event-icon">${model.symbol}</div>
+      <div>
+        <div class="event-head">
+          <h2>${model.title}</h2>
+          <span class="event-time">${new Date(evt.timestamp || Date.now()).toLocaleTimeString()}</span>
         </div>
+        <p class="event-copy">${model.copy}</p>
+        <div class="tags">${tagsFor(evt)}</div>
       </div>
     </div>
     ${xorg}
-    <div class="ecard-detail" id="${id}">
-      <div class="dg"><span class="dk">Cert ID</span><span class="dv">${evt.cert_id||'—'}</span></div>
-      <div class="dg"><span class="dk">Agent ID</span><span class="dv">${evt.agent_id||'—'}</span></div>
-      <div class="dg"><span class="dk">Human Issuer</span><span class="dv">${evt.human_id||'—'}</span></div>
-      <div class="dg"><span class="dk">Scope Checked</span><span class="dv">${evt.scope||'—'}</span></div>
-      <div class="dg"><span class="dk">Tool</span><span class="dv">${evt.tool||'—'}</span></div>
-      ${evt.reason?`<div class="dg"><span class="dk">Denial Reason</span><span class="dv" style="color:var(--red)">${evt.reason}</span></div>`:''}
+    <div class="details" id="${id}">
+      ${detail('MCP server', evt.server)}
+      ${detail('Tool', evt.tool)}
+      ${detail('Scope checked', evt.scope)}
+      ${detail('Cert ID', evt.cert_id)}
+      ${detail('Agent ID', evt.agent_id)}
+      ${detail('Human issuer', evt.human_id)}
+      ${evt.reason ? detail('Denial reason', evt.reason, 'bad') : ''}
     </div>`;
 
   const feed = document.getElementById('feed');
   feed.prepend(card);
-  while(feed.children.length>51) feed.removeChild(feed.lastChild);
+  while (feed.children.length > 51) feed.removeChild(feed.lastChild);
 }
 
-function tog(id){ document.getElementById(id)?.classList.toggle('open'); }
+function toggleDetails(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
 
-function connect(){
+function connect() {
   const es = new EventSource('http://localhost:8099/events');
-  es.onopen = ()=>{ const p=document.getElementById('pill'); p.classList.remove('offline'); p.classList.add('live'); document.getElementById('pill-txt').textContent='Live'; };
-  es.onmessage = e=>{ try{ handle(JSON.parse(e.data)); }catch{} };
-  es.onerror = ()=>{ const p=document.getElementById('pill'); p.classList.remove('live'); p.classList.add('offline'); document.getElementById('pill-txt').textContent='Reconnecting…'; es.close(); setTimeout(connect,3000); };
+  es.onopen = () => {
+    const pill = document.getElementById('pill');
+    pill.classList.add('live');
+    document.getElementById('pill-txt').textContent = 'Live';
+  };
+  es.onmessage = event => {
+    try { handle(JSON.parse(event.data)); } catch {}
+  };
+  es.onerror = () => {
+    const pill = document.getElementById('pill');
+    pill.classList.remove('live');
+    document.getElementById('pill-txt').textContent = 'Reconnecting';
+    es.close();
+    setTimeout(connect, 2500);
+  };
 }
+
+updateCounts();
 connect();
 </script>
 </body>
