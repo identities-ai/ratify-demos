@@ -9,9 +9,9 @@
 #   SDK_DIR=/path/to/ratify-protocol/sdks/c make
 #
 # Or set SDK_DIR in your shell:
-#   export SDK_DIR=~/projects/IdentitiesAI/ratify-protocol/sdks/c
+#   export SDK_DIR=/path/to/ratify-protocol/sdks/c
 
-SDK_DIR ?= $(HOME)/projects/IdentitiesAI/ratify-protocol/sdks/c
+SDK_DIR ?= $(HOME)/ratify-protocol/sdks/c
 LIB     := $(SDK_DIR)/target/release/libratify_c.a
 INCLUDE := $(SDK_DIR)/include
 
